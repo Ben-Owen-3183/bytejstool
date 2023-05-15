@@ -63,20 +63,20 @@ class ByteMeJS:
         make_directory(byte_directory_path)
 
   def push_cloned_component_to_byte(self, path):
-      depth = len(path.split(self.new_component_path)[-1].split("/")) - 1
-      print_i(f"Copying Contents of {path}")
-      with open(path, 'r') as cloned_file:
-        original_file_path = self.project_to_byte_path(path)
-        original_file = None
-        if not file_exists(original_file_path):
-          print_s(f"- Adding new file {original_file_path}")
-          original_file = create_empty_file(original_file_path)
-        else:
-          original_file = get_file(original_file_path)
-        lines = cloned_file.read().splitlines()
-        lines = self.replace_component_name(lines, self.new_component_name, self.target_component)
-        lines = self.revert_import_paths(lines, depth)
-        overwrite_file(original_file, lines)
+    depth = len(path.split(self.new_component_path)[-1].split("/")) - 1
+    print_i(f"Copying Contents of {path}")
+    with open(path, 'r') as cloned_file:
+      original_file_path = self.project_to_byte_path(path)
+      original_file = None
+      if not file_exists(original_file_path):
+        print_s(f"- Adding new file {original_file_path}")
+        original_file = create_empty_file(original_file_path)
+      else:
+        original_file = get_file(original_file_path)
+      lines = cloned_file.read().splitlines()
+      lines = self.replace_component_name(lines, self.new_component_name, self.target_component)
+      lines = self.revert_import_paths(lines, depth)
+      overwrite_file(original_file, lines)
 
   def revert_import_paths(self, lines, depth):
     for i, line in enumerate(lines):
@@ -163,18 +163,18 @@ class ByteMeJS:
     overwrite_file(file, lines)
 
   def enable_local_byte_gem(self):
-      print_i(f"\nEnabling local byte gem...")
-      gemfile_path = f"{self.target_project_path}/gemfile"
-      file = get_file(gemfile_path)
-      lines = file.read().splitlines()
-      for i, line in enumerate(lines):
-        if re.search(settings.LOCAL_BYTE_GEM_REGEX, line):
-          lines[i] = lines[i].replace("#", "").strip()
-        if re.search(settings.REMOTE_BYTE_GEM_REGEX, line) and not re.match(r"#", line):
-          lines[i] = '#' + lines[i]
-          lines[i + 1] = '#' + lines[i + 1]
-          lines[i + 2] = '#' + lines[i + 2]
-      overwrite_file(file, lines)
+    print_i(f"\nEnabling local byte gem...")
+    gemfile_path = f"{self.target_project_path}/gemfile"
+    file = get_file(gemfile_path)
+    lines = file.read().splitlines()
+    for i, line in enumerate(lines):
+      if re.search(settings.LOCAL_BYTE_GEM_REGEX, line):
+        lines[i] = lines[i].replace("#", "").strip()
+      if re.search(settings.REMOTE_BYTE_GEM_REGEX, line) and not re.match(r"#", line):
+        lines[i] = '#' + lines[i]
+        lines[i + 1] = '#' + lines[i + 1]
+        lines[i + 2] = '#' + lines[i + 2]
+    overwrite_file(file, lines)
 
   def bundle_project(self):
     print_i(f"\nAttempting to bundle project...")
