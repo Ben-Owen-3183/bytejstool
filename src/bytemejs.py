@@ -168,9 +168,9 @@ class ByteMeJS:
       file = get_file(gemfile_path)
       lines = file.read().splitlines()
       for i, line in enumerate(lines):
-        if re.match(settings.LOCAL_BYTE_GEM_REGEX, line):
+        if re.search(settings.LOCAL_BYTE_GEM_REGEX, line):
           lines[i] = lines[i].replace("#", "").strip()
-        if re.match(settings.REMOTE_BYTE_GEM_REGEX, line) and not re.match(r"#", line):
+        if re.search(settings.REMOTE_BYTE_GEM_REGEX, line) and not re.match(r"#", line):
           lines[i] = '#' + lines[i]
           lines[i + 1] = '#' + lines[i + 1]
           lines[i + 2] = '#' + lines[i + 2]

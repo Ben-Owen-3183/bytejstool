@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import settings
 from file_manager import directory_exists
 import traceback

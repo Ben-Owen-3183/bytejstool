@@ -16,7 +16,7 @@ BYTE_PATH = f"{HOME_PATH}/superbyte/projects/byte"
 
 
 # debooger
-DEBUG = True
+DEBUG = False
 # leave false unless you know what you're doing
 DANGEROUS_DEBUG_DELETE = False
 # stacks of traces
@@ -30,7 +30,7 @@ VIEW_DIR_PATH = 'app/views'
 # regex to target the '../' parts in import statements
 PREPENDED_IMPORT_PATH_REGEX = r"(\.\./)+"
 # regex to match import statements that need pointing to byte
-IMPORT_REGEX = r"^\b(import)\b.*\b(from)\b.*" + PREPENDED_IMPORT_PATH_REGEX + r"[A-Z].*$"
+IMPORT_REGEX = fr"^\b(import)\b.*\b(from)\b.*{PREPENDED_IMPORT_PATH_REGEX}[A-Z].*$"
 # what to replace the import path with
 IMPORT_REPLACE = "@cogitorteam/byte/dist/"
 # js file extensions to look for when editing files
@@ -47,8 +47,8 @@ REMOTE_BYTE_GEM_REGEX = r"source.*https://rubygems.pkg.github.com/cogitorteam.*d
 SHOW_BUNDLE_LOGS = False
 
 if DEBUG: 
-  HOME_PATH = '../testing'
-  PROJECT_PATHS = ['../testing/working_code']
-  BYTE_PATH = '../testing/working_code/byte'
+  HOME_PATH = 'testing'
+  PROJECT_PATHS = ['testing/working_code']
+  BYTE_PATH = 'testing/working_code/byte'
 elif DANGEROUS_DEBUG_DELETE:
   DANGEROUS_DEBUG_DELETE = False

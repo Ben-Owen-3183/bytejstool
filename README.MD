@@ -3,25 +3,29 @@
 ## quick setup
 
 ```bash
-mkdir ~/.scripts
-cd ~/.scripts
+mkdir ~/scripts
+cd ~/scripts
 git clone git@github.com:Ben-Owen-3183/bytejstool.git
 cd bytejstool
 # you might need to give execute permissions to scripts
-chmod +x bcpull.sh
-chmod +x bcpush.sh
+chmod +x bcpull
+chmod +x bcpush
 ```
 
 
-Add .scripts to your path
+Add scripts/bytejstool to your path
 ```bash
-# Don't forget to restart terminal for this change to take effect
-echo 'export PATH="$HOME/.scripts:$PATH"' > ~/.zshrc
+# open zshrc
+vim ~/.zshrc
+# the following
+export PATH="$HOME/scripts/bytejstool:$PATH"
+# save file then run the following to reload zshrc (or restart terminal)
+source ~/.zshrc 
 ```
 
 Open the tools settings
 ```
-vim ~/.scripts/bytejstool/src/settings.py
+vim ~/scripts/bytejstool/src/settings.py
 ```
 Fill in settings for your workspace
 ```python
@@ -35,7 +39,7 @@ PROJECT_PATHS = [
 BYTE_PATH = f"{HOME_PATH}/path/to/byte/dir"
 ```
 
-You now be able to run the following commands
+You should now be able to run the following commands
 ```bash
 # to pull a component to a project run
 bcpull ComponentName working_project
