@@ -1,1 +1,1 @@
-python3 push "$@"
+python3 pull "$@"
