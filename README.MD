@@ -1,4 +1,5 @@
 
+## NOTE: i've not ran through this install process, so take it with a pinch of salt.
 
 ## quick setup
 
