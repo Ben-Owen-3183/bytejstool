@@ -1,5 +1,4 @@
 import settings
-import os
 from print_helpers import *
 import re
 import subprocess
