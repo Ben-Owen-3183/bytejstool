@@ -1,0 +1,3 @@
+
+class BMJException(Exception):
+  pass

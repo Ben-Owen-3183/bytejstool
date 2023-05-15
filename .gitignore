@@ -1,0 +1,4 @@
+__pycache__
+.vscode
+testing/example_code/*
+testing/working_code/*
