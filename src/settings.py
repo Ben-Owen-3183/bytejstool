@@ -28,7 +28,7 @@ HELPER_DIR_PATH = 'app/helpers'
 # relative path to views folder
 VIEW_DIR_PATH = 'app/views'
 # regex to target the '../' parts in import statements
-PREPENDED_IMPORT_PATH_REGEX = r"(\.\./)+"
+PREPENDED_IMPORT_PATH_REGEX = r"(\.\.\/)+"
 # regex to match import statements that need pointing to byte
 IMPORT_REGEX = fr"^\b(import)\b.*\b(from)\b.*{PREPENDED_IMPORT_PATH_REGEX}[A-Z].*$"
 # what to replace the import path with

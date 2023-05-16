@@ -46,6 +46,12 @@ class ByteMeJS:
     self.enable_local_byte_gem()
     self.bundle_project()
     
+  def paths_to_file_names(self, paths):
+    names = []
+    for path in paths:
+      names.append(path.split("/")[-1].split(".")[0])
+    return names
+    
   def push(self):
     paths = find_all_child_files(self.new_component_path)
     for path in paths:
@@ -86,13 +92,11 @@ class ByteMeJS:
 
   def byte_to_project_path(self, path):
     path = path.replace(settings.BYTE_PATH, self.target_project_path)
-    path = path.replace(self.target_component, self.new_component_name)
-    return path
+    return path.replace(self.target_component, self.new_component_name)
 
   def project_to_byte_path(self, path):
     path = path.replace(self.target_project_path, settings.BYTE_PATH)
-    path = path.replace(self.new_component_name, self.target_component)
-    return path
+    return path.replace(self.new_component_name, self.target_component)
 
   def build_new_component_folder_structure(self):
     print_i(f"\nBuilding new component folder structure...")  
@@ -112,19 +116,17 @@ class ByteMeJS:
       make_directory(self.byte_to_project_path(directory))
 
   def is_js_file(self, path):
-    if path.split('.')[-1] in settings.JS_FILE_EXTENSIONS:
-      return True
-    return False
+    return path.split('.')[-1] in settings.JS_FILE_EXTENSIONS
 
   def clone_component(self):
     print_i(f"\nCloning component to target project...")
-    
     byte_file_paths = find_all_child_files(self.target_component_path)
+    local_component_names = self.paths_to_file_names(byte_file_paths)
     for bf_path in byte_file_paths:
       with open(bf_path, 'r') as f:
         print_i(f"Cloning file: {bf_path}")
         lines = f.read().splitlines()
-        lines = self.replace_imports(lines)
+        lines = self.replace_imports(lines, local_component_names)
         lines = self.replace_component_name(lines, self.target_component, self.new_component_name)
         create_file(self.byte_to_project_path(bf_path), lines)
 
@@ -135,11 +137,13 @@ class ByteMeJS:
         print_s(f" - line {i} changed to \"{lines[i]}\"")
     return lines
 
-  def replace_imports(self, lines):
+  def replace_imports(self, lines, local_component_names):
     for i, line in enumerate(lines):
       if re.match(settings.IMPORT_REGEX, line):
-        lines[i] = re.sub(settings.PREPENDED_IMPORT_PATH_REGEX, settings.IMPORT_REPLACE, line)
-        print_s(f" - line {i} changed to \"{lines[i]}\"")
+        import_component = line.split("\'")[1].split("/")[-1]
+        if import_component not in local_component_names:
+          lines[i] = re.sub(settings.PREPENDED_IMPORT_PATH_REGEX, settings.IMPORT_REPLACE, line)
+          print_s(f" - line {i} changed to \"{lines[i]}\"")
     return lines
 
   def replace_all_react_calls(self):
