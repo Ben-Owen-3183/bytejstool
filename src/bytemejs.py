@@ -40,38 +40,38 @@ class ByteMeJS:
     self.project_docker_container_id = subprocess.getoutput(container_id_command).split(" ")[0]
 
   def pull(self):
-    self.build_new_component_folder_structure()
-    self.clone_component()
-    self.replace_all_react_calls()
-    self.enable_local_byte_gem()
-    self.bundle_project()
-    
-  def paths_to_file_names(self, paths):
-    names = []
-    for path in paths:
-      names.append(path.split("/")[-1].split(".")[0])
-    return names
+    self.__build_new_component_folder_structure()
+    self.__clone_component()
+    self.__replace_all_react_calls()
+    self.__enable_local_byte_gem()
+    self.__bundle_project()
     
   def push(self):
     paths = find_all_child_files(self.new_component_path)
     for path in paths:
-      self.add_new_directories()
-      self.push_cloned_component_to_byte(path)
+      self.__add_new_directories()
+      self.__push_cloned_component_to_byte(path)
+    
+  def __paths_to_file_names(self, paths):
+    names = []
+    for path in paths:
+      names.append(path.split("/")[-1].split(".")[0])
+    return names
 
-  def add_new_directories(self):
+  def __add_new_directories(self):
     directories = find_all_child_directories(self.new_component_path)
     directories = sorted(directories, key=lambda path: len(path.split("/")))
     for directory in directories:
-      byte_directory_path = self.project_to_byte_path(directory)
+      byte_directory_path = self.__project_to_byte_path(directory)
       if not directory_exists(byte_directory_path):
         print_i(f"New directory added {byte_directory_path}")
         make_directory(byte_directory_path)
 
-  def push_cloned_component_to_byte(self, path):
+  def __push_cloned_component_to_byte(self, path):
     depth = len(path.split(self.new_component_path)[-1].split("/")) - 1
     print_i(f"Copying Contents of {path}")
     with open(path, 'r') as cloned_file:
-      original_file_path = self.project_to_byte_path(path)
+      original_file_path = self.__project_to_byte_path(path)
       original_file = None
       if not file_exists(original_file_path):
         print_s(f"- Adding new file {original_file_path}")
@@ -79,26 +79,26 @@ class ByteMeJS:
       else:
         original_file = get_file(original_file_path)
       lines = cloned_file.read().splitlines()
-      lines = self.replace_component_name(lines, self.new_component_name, self.target_component)
-      lines = self.revert_import_paths(lines, depth)
+      lines = self.__replace_component_name(lines, self.new_component_name, self.target_component)
+      lines = self.__revert_import_paths(lines, depth)
       overwrite_file(original_file, lines)
 
-  def revert_import_paths(self, lines, depth):
+  def __revert_import_paths(self, lines, depth):
     for i, line in enumerate(lines):
       if re.search(settings.IMPORT_REPLACE, line):
         lines[i] = line.replace(settings.IMPORT_REPLACE, ("../" * depth))
         print_s(f" - line {i} import reverted to {lines[i]}")
     return lines
 
-  def byte_to_project_path(self, path):
+  def __byte_to_project_path(self, path):
     path = path.replace(settings.BYTE_PATH, self.target_project_path)
     return path.replace(self.target_component, self.new_component_name)
 
-  def project_to_byte_path(self, path):
+  def __project_to_byte_path(self, path):
     path = path.replace(self.target_project_path, settings.BYTE_PATH)
     return path.replace(self.new_component_name, self.target_component)
 
-  def build_new_component_folder_structure(self):
+  def __build_new_component_folder_structure(self):
     print_i(f"\nBuilding new component folder structure...")  
     try:
       make_directory(self.new_component_path)
@@ -113,31 +113,28 @@ class ByteMeJS:
     directories = sorted(directories, key=lambda path: len(path.split("/")))
 
     for directory in directories:
-      make_directory(self.byte_to_project_path(directory))
+      make_directory(self.__byte_to_project_path(directory))
 
-  def is_js_file(self, path):
-    return path.split('.')[-1] in settings.JS_FILE_EXTENSIONS
-
-  def clone_component(self):
+  def __clone_component(self):
     print_i(f"\nCloning component to target project...")
     byte_file_paths = find_all_child_files(self.target_component_path)
-    local_component_names = self.paths_to_file_names(byte_file_paths)
+    local_component_names = self.__paths_to_file_names(byte_file_paths)
     for bf_path in byte_file_paths:
       with open(bf_path, 'r') as f:
         print_i(f"Cloning file: {bf_path}")
         lines = f.read().splitlines()
-        lines = self.replace_imports(lines, local_component_names)
-        lines = self.replace_component_name(lines, self.target_component, self.new_component_name)
-        create_file(self.byte_to_project_path(bf_path), lines)
+        lines = self.__replace_imports(lines, local_component_names)
+        lines = self.__replace_component_name(lines, self.target_component, self.new_component_name)
+        create_file(self.__byte_to_project_path(bf_path), lines)
 
-  def replace_component_name(self, lines, target, replace):
+  def __replace_component_name(self, lines, target, replace):
     for i, line in enumerate(lines):
       if re.search(target, line):
         lines[i] = line.replace(target, replace)
         print_s(f" - line {i} changed to \"{lines[i]}\"")
     return lines
 
-  def replace_imports(self, lines, local_component_names):
+  def __replace_imports(self, lines, local_component_names):
     for i, line in enumerate(lines):
       if re.match(settings.IMPORT_REGEX, line):
         import_component = line.split("\'")[1].split("/")[-1]
@@ -146,16 +143,16 @@ class ByteMeJS:
           print_s(f" - line {i} changed to \"{lines[i]}\"")
     return lines
 
-  def replace_all_react_calls(self):
+  def __replace_all_react_calls(self):
     file_paths = []
     for ruby_file_path in self.react_call_paths:
       file_paths = file_paths + find_all_child_files(ruby_file_path)
     
     print_i(f"\nSearching for `react_component(...)` calls in {len(file_paths)} files")
     for path in file_paths:
-      self.search_file_for_react_calls(path)
+      self.__search_file_for_react_calls(path)
 
-  def search_file_for_react_calls(self, path):
+  def __search_file_for_react_calls(self, path):
     file = get_file(path)
     lines = file.read().splitlines()
     for i, line in enumerate(lines):
@@ -165,7 +162,7 @@ class ByteMeJS:
         print_s(f" - line {i} will be changed to \"{lines[i]}\"")
     overwrite_file(file, lines)
 
-  def enable_local_byte_gem(self):
+  def __enable_local_byte_gem(self):
     print_i(f"\nEnabling local byte gem...")
     gemfile_path = f"{self.target_project_path}/gemfile"
     file = get_file(gemfile_path)
@@ -179,7 +176,7 @@ class ByteMeJS:
         lines[i + 2] = '#' + lines[i + 2]
     overwrite_file(file, lines)
 
-  def bundle_project(self):
+  def __bundle_project(self):
     print_i(f"\nAttempting to bundle project...")
     command = f"docker exec -it -w /workspaces/{self.target_project} {self.project_docker_container_id} bundle"
     if settings.DEBUG:
