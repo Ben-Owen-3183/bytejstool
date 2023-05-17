@@ -47,9 +47,11 @@ class ByteMeJS:
     self.__bundle_project()
     
   def push(self):
+    if not directory_exists(self.new_component_path):
+      raise BMJException(f"The {self.new_component_name} component clone was not found in {self.target_project}")
     paths = find_all_child_files(self.new_component_path)
+    self.__add_new_directories()
     for path in paths:
-      self.__add_new_directories()
       self.__push_cloned_component_to_byte(path)
     
   def __paths_to_file_names(self, paths):
@@ -156,7 +158,11 @@ class ByteMeJS:
     file = get_file(path)
     lines = file.read().splitlines()
     for i, line in enumerate(lines):
-      if re.match(self.react_call_regex, line) and not re.match(self.react_call_verify_regex, line):
+      single_quote_match = re.match(fr"\'{self.react_call_regex}\'", line) 
+      single_quote_verify_match = not re.match(fr"\'{self.react_call_verify_regex}\'", line)
+      double_quote_match = re.match(fr"\"{self.react_call_regex}\"", line)
+      double_quote_verify_match = not re.match(fr"\"{self.react_call_verify_regex}\"", line)
+      if (single_quote_match and single_quote_verify_match) or (double_quote_match and double_quote_verify_match):
         lines[i] = line.replace(self.target_component, self.new_component_name)
         print_i(f"React call found in {path}")
         print_s(f" - line {i} will be changed to \"{lines[i]}\"")
