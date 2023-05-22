@@ -42,11 +42,11 @@ class ByteMeJS:
     self.project_docker_container_id = subprocess.getoutput(container_id_command).split(" ")[0]
 
   def pull(self):
-    # self.__build_new_component_folder_structure()
-    # self.__clone_component()
+    self.__build_new_component_folder_structure()
+    self.__clone_component()
     self.__replace_all_react_calls()
-    # self.__enable_local_byte_gem()
-    # self.__bundle_project()
+    self.__enable_local_byte_gem()
+    self.__bundle_project()
     
   def push(self):
     if not directory_exists(self.new_component_path):
