@@ -42,11 +42,11 @@ class ByteMeJS:
     self.project_docker_container_id = subprocess.getoutput(container_id_command).split(" ")[0]
 
   def pull(self):
-    self.__build_new_component_folder_structure()
-    self.__clone_component()
+    # self.__build_new_component_folder_structure()
+    # self.__clone_component()
     self.__replace_all_react_calls()
-    self.__enable_local_byte_gem()
-    self.__bundle_project()
+    # self.__enable_local_byte_gem()
+    # self.__bundle_project()
     
   def push(self):
     if not directory_exists(self.new_component_path):
@@ -163,8 +163,8 @@ class ByteMeJS:
       
       single_quote_match = re.match(fr"{self.single_quote_react_call_regex}", line) 
       single_quote_verify_match = not re.match(fr"{self.single_quote_react_call_verify_regex}", line)
-      double_quote_match = not re.match(fr"{self.double_quote_react_call_regex}", line)
-      double_quote_verify_match = re.match(fr"{self.double_quote_react_call_verify_regex}", line)
+      double_quote_match = re.match(fr"{self.double_quote_react_call_regex}", line)
+      double_quote_verify_match = not re.match(fr"{self.double_quote_react_call_verify_regex}", line)
 
       if (single_quote_match and single_quote_verify_match) or (double_quote_match and double_quote_verify_match):
         lines[i] = line.replace(self.target_component, self.new_component_name)
