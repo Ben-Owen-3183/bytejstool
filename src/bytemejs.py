@@ -34,8 +34,10 @@ class ByteMeJS:
       f"{settings.BYTE_PATH}/{settings.HELPER_DIR_PATH}",
       f"{settings.BYTE_PATH}/{settings.VIEW_DIR_PATH}"
     ]
-    self.react_call_regex = settings.REACT_CALL_REGEX.replace('$$$COMPONENT_NAME$$$', self.target_component)
-    self.react_call_verify_regex = settings.REACT_CALL_REGEX.replace('$$$COMPONENT_NAME$$$', self.new_component_name)
+    self.single_quote_react_call_regex = settings.REACT_CALL_SINGLE_QUOTE_REGEX.replace('$$$COMPONENT_NAME$$$', self.target_component)
+    self.single_quote_react_call_verify_regex = settings.REACT_CALL_SINGLE_QUOTE_REGEX.replace('$$$COMPONENT_NAME$$$', self.new_component_name)
+    self.double_quote_react_call_regex = settings.REACT_CALL_DOUBLE_QUOTE_REGEX.replace('$$$COMPONENT_NAME$$$', self.target_component)
+    self.double_quote_react_call_verify_regex = settings.REACT_CALL_DOUBLE_QUOTE_REGEX.replace('$$$COMPONENT_NAME$$$', self.new_component_name)
     container_id_command = f"docker ps | grep \"app\" | grep \"{self.target_project}\""
     self.project_docker_container_id = subprocess.getoutput(container_id_command).split(" ")[0]
 
@@ -149,7 +151,7 @@ class ByteMeJS:
     file_paths = []
     for ruby_file_path in self.react_call_paths:
       file_paths = file_paths + find_all_child_files(ruby_file_path)
-    
+
     print_i(f"\nSearching for `react_component(...)` calls in {len(file_paths)} files")
     for path in file_paths:
       self.__search_file_for_react_calls(path)
@@ -158,10 +160,12 @@ class ByteMeJS:
     file = get_file(path)
     lines = file.read().splitlines()
     for i, line in enumerate(lines):
-      single_quote_match = re.match(fr"\'{self.react_call_regex}\'", line) 
-      single_quote_verify_match = not re.match(fr"\'{self.react_call_verify_regex}\'", line)
-      double_quote_match = re.match(fr"\"{self.react_call_regex}\"", line)
-      double_quote_verify_match = not re.match(fr"\"{self.react_call_verify_regex}\"", line)
+      
+      single_quote_match = re.match(fr"{self.single_quote_react_call_regex}", line) 
+      single_quote_verify_match = not re.match(fr"{self.single_quote_react_call_verify_regex}", line)
+      double_quote_match = not re.match(fr"{self.double_quote_react_call_regex}", line)
+      double_quote_verify_match = re.match(fr"{self.double_quote_react_call_verify_regex}", line)
+
       if (single_quote_match and single_quote_verify_match) or (double_quote_match and double_quote_verify_match):
         lines[i] = line.replace(self.target_component, self.new_component_name)
         print_i(f"React call found in {path}")

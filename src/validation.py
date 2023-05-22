@@ -39,7 +39,7 @@ def validate_settings():
     raise BMJException("You must set js file extensions")
   if not settings.COMPONENT_SUFFIX:
     raise BMJException("You must set a component suffix")
-  if not settings.REACT_CALL_REGEX:
+  if not settings.REACT_CALL_SINGLE_QUOTE_REGEX or not settings.REACT_CALL_DOUBLE_QUOTE_REGEX:
     raise BMJException("You must set a react call regex")
   if not settings.LOCAL_BYTE_GEM_REGEX:
     raise BMJException("You must set a local byte gem regex")

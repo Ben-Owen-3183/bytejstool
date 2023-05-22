@@ -15,6 +15,11 @@ BYTE_PATH = f"{HOME_PATH}/superbyte/projects/byte"
 
 
 
+
+
+
+
+LOGGING = True
 # debooger
 DEBUG = False
 # leave false unless you know what you're doing
@@ -36,9 +41,10 @@ IMPORT_REPLACE = "@cogitorteam/byte/dist/"
 # js file extensions to look for when editing files
 JS_FILE_EXTENSIONS = ['js', 'jsx', 'ts', 'tsx']
 # Prefix for component name for new folder and varaiable/function/class names 
-COMPONENT_SUFFIX = 'V2'
+COMPONENT_SUFFIX = 'ByteClone'
 # regex to target the react_component('<ComponentName>', ..., ...)
-REACT_CALL_REGEX = r".*react_component.*$$$COMPONENT_NAME$$$.*"
+REACT_CALL_SINGLE_QUOTE_REGEX = r".*react_component.*\'$$$COMPONENT_NAME$$$\'.*"
+REACT_CALL_DOUBLE_QUOTE_REGEX = r".*react_component.*\'$$$COMPONENT_NAME$$$\'.*"
 # local regex to target gem code in gemfile in project
 LOCAL_BYTE_GEM_REGEX = r"gem.*byte.*,.*path:.*\.\./byte"
 # remote regex to target gem code in gemfile in project
